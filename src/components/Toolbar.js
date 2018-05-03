@@ -8,15 +8,13 @@ const Toolbar = props => {
           <span className="badge badge">2</span>
           unread messages
         </p>
-        <a className="btn btn-danger">
-          <i className="fa fa-plus"></i>
-        </a>
-
         <button onClick={props.bulkHandler} className="btn btn-default">
           <i className="fa fa-minus-square-o"></i>
         </button>
 
-        <button className="btn btn-default">Mark As Read</button>
+        <button
+          className="btn btn-default"
+           onClick={props.onRead}>Mark As Read</button>
 
         <button className="btn btn-default">Mark As Unread</button>
 
@@ -34,7 +32,7 @@ const Toolbar = props => {
           <option value="gschool">gschool</option>
         </select>
 
-        <button className="btn btn-default">
+        <button className="btn btn-default" onClick={props.deleteMethod}>
           <i className="fa fa-trash-o"></i>
         </button>
       </div>

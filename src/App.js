@@ -11,7 +11,8 @@ class App extends Component {
     super(props);
     this.state = {
       data: EmailData,
-      itemsSelected: 0
+      itemsSelected: 0,
+      itemsRead: 0
     };
   }
 
@@ -31,17 +32,24 @@ class App extends Component {
   console.log('will mount', this.state)
   }
 
-  // HOW TO DELETE 
-  // const temp = this.state.data.filter(item => !item.selected)
-  // this.setState({data: temp})
-
-addEmail = (emails) => {
-  this.setState(prevState => {
-    {
-      data: prevState.data.concat(emails)
-    }
-  })
+deleteMethod = () => {
+  const deleteItem = this.state.data.filter(item => !item.selected)
+  this.setState({data: deleteItem})
+  console.log('delete', deleteItem)
 }
+
+starButton = () => {
+  const star = this.state.data.filter(item => !item.starred)
+  this.setState({data: star})
+  console.log('star', star)
+  }
+
+  onRead = () => {
+    const read = this.state.data.filter(item => !item.read)
+    this.setState({data: read})
+  }
+
+
 messageSelectedHandler = item => {
   console.log('item selected', item);
   let count = 0
@@ -75,6 +83,8 @@ messageSelectedHandler = item => {
   })
 }
 
+
+
 bulkHandler = () => {
   console.log('anything', this.state)
   let messages
@@ -106,10 +116,15 @@ bulkHandler = () => {
     })
     return (
       <div className="App">
-        <Toolbar bulkHandler={this.bulkHandler} />
+        <Toolbar
+          onRead={this.onRead}
+          bulkHandler={this.bulkHandler}
+          deleteMethod={this.deleteMethod}
+        />
         <MessageList
           data={this.state.data}
           messageSelectedHandler={this.messageSelectedHandler}
+          starButton={this.starButton}
         />
       </div>
     );
