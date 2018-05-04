@@ -2,22 +2,40 @@ import React, { Component } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import Toolbar from "./components/Toolbar";
-import Message from "./components/Message";
 import MessageList from "./components/MessageList";
-import EmailData from "./EmailData.json";
+import Message from './components/Message';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: EmailData,
+      data: [],
       itemsSelected: 0,
     };
   }
 
+async componentDidMount() {
+  const messagesResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/messages`)
+const messagesJSON = await messagesResponse.json()
+this.setState({data: messagesJSON})
+}
+
+async createMessage(item)  {
+  const response = await fetch('http://localhost:8082/api/messages', {
+    method: 'POST',
+    body: JSON.stringify(item),
+    headers: {
+      'Content-Type': 'application/json',
+       'Accept': 'application/json',
+    }
+  })
+  const moreItems = await response.json()
+  this.setState({data: [...this.state.data, moreItems]})
+}
+
   componentWillMount() {
     let itemsSelected = 0
-  const data = EmailData.map(item => {
+  const data = this.state.data.map(item => {
     if (item.selected) {
       itemsSelected++
     }
@@ -97,6 +115,13 @@ applyLabelsHandler = (e) => {
     data: applyLabels
   })
 }
+
+toggleHidden() {
+  this.setState({
+    isHidden: !this.state.isHidden
+  })
+}
+
 
 removeLabelsHandler = (e) => {
   console.log('event', e.target.value)
@@ -184,15 +209,23 @@ bulkHandler = () => {
   this.setState({data: messages, itemsSelected: count})
 }
 
+addItems = (item) => {
+  const { data } = this.state
+  this.setState({
+    data: [...data, item]
+  })
+}
+
 
 
   render() {
-    const emails = this.state.data.map((email, i ) => {
-      <Message key={i} email={ email } />
-    })
+
     return (
       <div className="App">
+
         <Toolbar
+          createMessage={this.createMessage}
+          toggleHidden={this.toggleHidden}
           removeLabelsHandler={this.removeLabelsHandler}
           applyLabelsHandler={this.applyLabelsHandler}
           messageUnreadHandler={this.messageUnreadHandler}
@@ -201,6 +234,7 @@ bulkHandler = () => {
           bulkHandler={this.bulkHandler}
           deleteMethod={this.deleteMethod}
         />
+
         <MessageList
           data={this.state.data}
           messageSelectedHandler={this.messageSelectedHandler}
