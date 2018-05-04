@@ -8,7 +8,7 @@ export default class MessageList extends React.Component {
 
     return data.map((list, i) => {
       console.log('in render email list loop', list)
-      const isSelected = Reflect.get(list, 'selected');
+      const isSelected = list.selected;
       const isRead = list.read;
       const isUnRead = list.read;
       return (
