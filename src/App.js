@@ -12,7 +12,6 @@ class App extends Component {
     this.state = {
       data: EmailData,
       itemsSelected: 0,
-      itemsRead: 0
     };
   }
 
@@ -38,16 +37,91 @@ deleteMethod = () => {
   console.log('delete', deleteItem)
 }
 
-starButton = () => {
-  const star = this.state.data.filter(item => !item.starred)
-  this.setState({data: star})
-  console.log('star', star)
-  }
+unreadMessages = () => {
+  console.log('unreadMessages initialised')
+  return this.state.data.reduce((sum, i) => {
+    return sum + !i.read
+  }, 0)
+}
 
-  onRead = () => {
-    const read = this.state.data.filter(item => !item.read)
-    this.setState({data: read})
-  }
+messageReadHandler = () => {
+  const readMessages = this.state.data.map(message => {
+    if(!message.read && message.selected) {
+    console.log('message in messegared read handler', message)
+      const item = {...message}
+      item.read = true
+      return item
+    } else {
+      return message
+    }
+  })
+  console.log('in messageReadHandler', readMessages)
+  this.setState({
+    data: readMessages,
+  })
+}
+
+messageUnreadHandler = () => {
+  const unreadMessages1 = this.state.data.map(message => {
+    if(message.read && message.selected) {
+    console.log('message in messegared read handler', message)
+      const item = {...message}
+      item.read = false
+      return item
+    } else {
+      return message
+    }
+  })
+  console.log('in messageReadHandler', unreadMessages1)
+  this.setState({
+    data: unreadMessages1
+  })
+}
+applyLabelsHandler = (e) => {
+  console.log('event', e.target.value)
+  const label = e.target.value
+  const applyLabels = this.state.data.map(message => {
+    if (message.selected && label && !message.labels.includes(label)) {
+      const oldLabels = message.labels.slice();
+      const withNewLabel = oldLabels.concat(label)
+      const newMessage = {...message}
+      newMessage.labels = withNewLabel;
+       return newMessage
+     } else {
+       return message
+     }
+   })
+   console.log('apply labels', applyLabels)
+
+  this.setState({
+    data: applyLabels
+  })
+}
+
+removeLabelsHandler = (e) => {
+  console.log('event', e.target.value)
+  const label = e.target.value
+  const removeLabels = this.state.data.map(message => {
+    if (message.selected && label && message.labels.includes(label)) {
+      const oldLabels = message.labels;
+      const withNewLabel = oldLabels.filter(label => label === !label)
+      const newMessage = {...message}
+      newMessage.labels = withNewLabel;
+       return newMessage
+     } else {
+       return message
+     }
+   })
+  this.setState({
+    data: removeLabels
+  })
+}
+// if (message.selected && message.includes(label)) {
+//     item.labels.filter(label => label !== labelToRemove)
+//     return item
+// } else {
+//   return message
+// }
 
 
 messageSelectedHandler = item => {
@@ -110,6 +184,8 @@ bulkHandler = () => {
   this.setState({data: messages, itemsSelected: count})
 }
 
+
+
   render() {
     const emails = this.state.data.map((email, i ) => {
       <Message key={i} email={ email } />
@@ -117,14 +193,17 @@ bulkHandler = () => {
     return (
       <div className="App">
         <Toolbar
-          onRead={this.onRead}
+          removeLabelsHandler={this.removeLabelsHandler}
+          applyLabelsHandler={this.applyLabelsHandler}
+          messageUnreadHandler={this.messageUnreadHandler}
+          unreadMessages={this.unreadMessages()}
+          messageReadHandler={this.messageReadHandler}
           bulkHandler={this.bulkHandler}
           deleteMethod={this.deleteMethod}
         />
         <MessageList
           data={this.state.data}
           messageSelectedHandler={this.messageSelectedHandler}
-          starButton={this.starButton}
         />
       </div>
     );

@@ -1,19 +1,26 @@
 import React from "react";
-import PopulatedMessages from "./PopulatedMessages";
 
 export default class MessageList extends React.Component {
   renderEmailList() {
     const { data } = this.props;
     console.log('data', data);
+    console.log('data from props', this.props)
 
     return data.map((list, i) => {
-      //  const isSelected = Reflect.get(list, 'selected')
-      const isSelected = list.selected;
+      console.log('in render email list loop', list)
+      const isSelected = Reflect.get(list, 'selected');
+      const isRead = list.read;
+      const isUnRead = list.read;
       return (
         <div
-          className={["row message read", isSelected ? "selected" : ""].join(
-            " "
-          )}
+          className={["row message",
+          isSelected ? "selected"
+          : "",
+          isRead ? "read"
+          : "",
+          isUnRead ? 'unread'
+          : ""
+        ].join(" ")}
           key={i}
         >
           <div className="col-xs-1">
@@ -26,10 +33,11 @@ export default class MessageList extends React.Component {
                 />
               </div>
               <div className="col-xs-2">
-                <i className="star fa fa-star-o" onClick={this.props.starButton}/>
+                <i className={["star fa ", isSelected ? 'fa-star' : 'fa-star-o'].join(' ')}/>
               </div>
             </div>
-            {list.labels.map(label => (
+            { list.labels &&
+              list.labels.map(label => (
               <span className="label label-warning">{label}</span>
             ))}
           </div>
