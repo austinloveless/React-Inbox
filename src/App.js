@@ -30,7 +30,10 @@ async createMessage(item)  {
     }
   })
   const moreItems = await response.json()
-  this.setState({data: [...this.state.data, moreItems]})
+  await this.setState({data:
+    [...this.state.data, moreItems]
+  })
+
 }
 
   componentWillMount() {
